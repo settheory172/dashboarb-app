@@ -4,3 +4,4 @@ plotly
 thefuzz
 numpy
 st-gsheets-connection
+matplotlib
