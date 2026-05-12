@@ -3,4 +3,4 @@ pandas
 plotly
 thefuzz
 numpy
-streamlit-gsheets
+st-gsheets-connection
