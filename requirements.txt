@@ -3,5 +3,3 @@ pandas
 plotly
 thefuzz
 numpy
-datetime
-hmac
