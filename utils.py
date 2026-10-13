@@ -541,9 +541,6 @@ def show_data(role = 'user'):
 
 
 
-
-
-
         
         
 
