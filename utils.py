@@ -312,7 +312,7 @@ def monthly_growth_rate(df, target_column):
         latest_growth = monthly_df.iloc[-1]['Tasa de crecimiento (%)']
         
         st.metric(
-            label=f'Ganancia por {monthly_df.iloc[-1]['mes']}', 
+            label=f"Ganancia por {monthly_df.iloc[-1]['mes']}", 
             value=f'{latest_revenue:,.0f}', 
             delta=f'{latest_growth:.0f}% (vs Mes anterior)'
         )
@@ -398,7 +398,7 @@ def client_retention_abandonment(df, target_column):
     df['fecha'] = pd.to_datetime(df['fecha'], format='%d/%m/%Y', errors='coerce')
     analysis_min = df['fecha'].min()
     analysis_max = df['fecha'].max()
-    st.write(f'Analisis desde: **{analysis_min.strftime('%d-%m-%y')}**; hasta: **{analysis_max.strftime('%d-%m-%y')}.**')
+    st.write(f"Analisis desde: **{analysis_min.strftime('%d-%m-%y')}**; hasta: **{analysis_max.strftime('%d-%m-%y')}.**")
     
     # Streamlit Slider: Let the user define what "Abandoned" means!
     churn_threshold = st.slider(
