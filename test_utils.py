@@ -1,5 +1,6 @@
 from streamlit.testing.v1 import AppTest
 import pandas as pd
+import streamlit as st
 import pytest
 
 # Datos de prueba compartidos
@@ -132,10 +133,10 @@ def monthly_growth_rate(df, target_column='total'):
     monthly_df['mes'] = monthly_df['mes'].astype(str)
     return monthly_df #monthly_df['mes']
 
-x = monthly_growth_rate(df)
+#x = monthly_growth_rate(df)
 #print(x)
 #print(x.iloc[0])
-print(x.iloc[0]['mes'])
+#print(x.iloc[0]['mes'])
  
 def test_montly_growth_rate():
     values = monthly_growth_rate(df)
@@ -168,8 +169,8 @@ def compund_annual_growth_rate(df, target_column='total'):
     return cagr_percentage
           
 
-x = compund_annual_growth_rate(df)
-print(x)
+#x = compund_annual_growth_rate(df)
+#print(x)
 
 def test_compound_annual_growth_rate():
     value = compund_annual_growth_rate(df)
@@ -200,12 +201,12 @@ def years_revenue (df, target_column = 'total'):
     chart_data = chart_data.sort_values('mes_num') # Ensures months are in order (Jan -> Dec)
     return chart_data
 
-y = years_revenue(df)
-print(y)
-print('*'*20)
-print(y.iloc[0])
-print('*'*20)
-print(y.iloc[0]['mes'])
+#y = years_revenue(df)
+#print(y)
+#print('*'*20)
+#print(y.iloc[0])
+#print('*'*20)
+#print(y.iloc[0]['mes'])
 
 def test_years_revenue():
     values = years_revenue(df)
@@ -215,30 +216,28 @@ def test_years_revenue():
     assert (compare == expected), f"Expected revenue to be {expected}, but got {compare}"
     
 
-'''def client_retention_abandonment(df, target_column='total'):
+def client_retention_abandonment(df, target_column='total'):
     # --- 1. DEFINE THE PARAMETERS ---
     # We use the most recent purchase in the whole dataset as our "Today" marker
     df['fecha'] = pd.to_datetime(df['fecha'], format='%d/%m/%Y', errors='coerce')
-    analysis_min = df['fecha'].min()
+    #analysis_min = df['fecha'].min()
     analysis_max = df['fecha'].max()
     
     client_stats = df.groupby(['cliente','fecha'])[target_column].sum().reset_index()
-    client_stats = client_stats.drop(columns=['cliente'])
-
-    # --- 2. CALCULATE PER-CLIENT STATS ---
-    # Group by client to find their last purchase date and total spent
+    #client_stats = client_stats.drop(columns=['cliente'])
     clientes = client_stats.groupby('cliente').agg(
         ultima_compra=('fecha', 'max'),
         Total_gastado =(target_column, 'sum'),
         Total_Ordenes=(target_column, 'count')).reset_index()
-      
-  
+
     # Calculate exactly how many days it has been since their last purchase
     clientes['Dias inactivo'] = (analysis_max - clientes['ultima_compra']).dt.days
+        
+    # Classify them as Retained or Abandoned based on the slider value
+    clientes['Estatus'] = clientes['Dias inactivo'].apply(
+        lambda x: 'Retenido' if x <= 90 else 'Abandono'
+    )
 
-      # Classify them as Retained or Abandoned based on the slider value
-    clientes['Estatus'] = clientes['Dias inactivo'].apply(lambda x: 'Retenido' if x <= 90 else 'Abandono')
-         
     # --- 3. CALCULATE OVERALL RATES ---
     total_clients = len(clientes)
     retained_count = len(clientes[clientes['Estatus'] == 'Retenido'])
@@ -247,8 +246,85 @@ def test_years_revenue():
     retention_rate = (retained_count / total_clients) * 100
     abandon_rate = (abandoned_count / total_clients) * 100
 
-    return retention_rate, abandon_rate
+    return clientes,retention_rate,abandon_rate
  
 
-y = client_retention_abandonment(df)
-print(y)'''
+#y = client_retention_abandonment(df)
+#print(y[0])
+#print(y[1])
+#print(y[2])
+
+def test_client_retention_abandonment():
+    values = client_retention_abandonment(df)
+    # Assertions
+    retention_rate = values[1]
+    abandonment_rate = values[2]
+    expected_retention_rate = 66.666666667
+    expected_abandonment_rate = 33.3333333
+
+    assert (retention_rate == pytest.approx(expected_retention_rate)), f"Expected revenue to be {expected_retention_rate}, but got {retention_rate}"
+    assert (abandonment_rate == pytest.approx(expected_abandonment_rate)), f"Expected revenue to be {expected_abandonment_rate}, but got {abandonment_rate}"
+
+
+
+
+#display_styled_table(df)
+
+def test_dashboard_table():
+    import streamlit as st
+
+    # 2. Define a wrapper function that acts as your "Streamlit app script"
+    def app_script():
+        import streamlit as st
+        import pandas as pd
+
+        df = pd.DataFrame([
+            {
+                "detalle": "machete de herragro",
+                "total": 197400,
+                "cliente": "ESPUMADOS S.A.",
+                "fecha": "01/10/2023",
+            },
+            {
+                "detalle": "flexometro de mts",
+                "total": 830025,
+                "cliente": "BOMBAS Y MONTAJES",
+                "fecha": "01/12/2023",
+            },
+            {
+                "detalle": "amarres plasticos x2",
+                "total": 1420,
+                "cliente": "FABRICA NACIONAL",
+                "fecha": "01/02/2023",
+            },
+        ])
+
+        def display_styled_table(df, target_column = 'total', color_map="Greens"):
+            """Applies background gradient and currency formatting to a specific column
+
+            and displays it in Streamlit using the full container width.
+            """
+            styled_df = df.style.background_gradient(
+                subset=[target_column], cmap=color_map
+            ).format({target_column: "{:,.0f}"})
+
+            return st.dataframe(styled_df, use_container_width=True, hide_index=True)
+                    
+        display_styled_table(df)
+        
+    # 1. Load the app script using AppTest
+    at = AppTest.from_function(app_script)
+
+    # 2. Run the app
+    at.run()
+
+    # 3. Assert that the app executed without any uncaught exceptions
+    assert not at.exception, f"App raised an exception: {at.exception}"
+
+    # 4. Verify that the dataframe element was rendered successfully
+    assert len(at.dataframe) > 0, "No dataframe element found in the app."
+
+    # Optional: Check properties of the rendered dataframe element if needed
+    # e.g., checking the shape or values via the underlying element
+    rendered_df = at.dataframe[0].value
+    assert "total" in rendered_df.columns
