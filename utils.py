@@ -115,7 +115,6 @@ def plot_chart_theme(fig, title_text=None, x_label=None, y_label=None):
   
 """shows top_n of most sold product, taking a dataframe and target_column=total it returns barchart and table of ranks"""  
 def ranking_product(df, target_column = 'total', top_n= 15):
-
     # 1. Aggregate revenue by product description
     revenue_ranking = df.groupby('detalle')[target_column].sum().reset_index()
     # 2. Get the Most Sold (Highest Revenue)

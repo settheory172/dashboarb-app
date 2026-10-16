@@ -266,12 +266,8 @@ def test_client_retention_abandonment():
     assert (abandonment_rate == pytest.approx(expected_abandonment_rate)), f"Expected revenue to be {expected_abandonment_rate}, but got {abandonment_rate}"
 
 
-
-
-#display_styled_table(df)
-
 def test_dashboard_table():
-    import streamlit as st
+    #import streamlit as st
 
     # 2. Define a wrapper function that acts as your "Streamlit app script"
     def app_script():
@@ -328,3 +324,95 @@ def test_dashboard_table():
     # e.g., checking the shape or values via the underlying element
     rendered_df = at.dataframe[0].value
     assert "total" in rendered_df.columns
+
+
+def test_plot_chart_theme():
+    #import streamlit as st
+    #import plotly.express as px
+
+    # 2. Define a wrapper function that acts as your "Streamlit app script"
+    def app_script():
+        import streamlit as st
+        import plotly.express as px
+        import pandas as pd
+
+        df = pd.DataFrame([
+            {
+                "detalle": "machete de herragro",
+                "total": 197400,
+                "cliente": "ESPUMADOS S.A.",
+                "fecha": "01/10/2023",
+            },
+            {
+                "detalle": "flexometro de mts",
+                "total": 830025,
+                "cliente": "BOMBAS Y MONTAJES",
+                "fecha": "01/12/2023",
+            },
+            {
+                "detalle": "amarres plasticos x2",
+                "total": 1420,
+                "cliente": "FABRICA NACIONAL",
+                "fecha": "01/02/2023",
+            },
+        ])
+
+        def plot_chart_theme(fig, title_text=None, x_label=None, y_label=None):
+            """
+            Applies a consistent dark green theme to any Plotly figure.
+            """
+            # Update Axes Labels
+            labels = {}
+            if x_label: labels['xaxis_title'] = x_label
+            if y_label: labels['yaxis_title'] = y_label
+            if title_text: labels['title'] = title_text
+            
+            fig.update_layout(
+                title_x=0.5, # True centering is usually 0.5
+                title_font=dict(size=30, color='#4ECDC4'),
+                font=dict(color='#E0F7E0'),
+                
+                # Background Colors
+                plot_bgcolor='#0D2818',
+                paper_bgcolor='#051010',
+                
+                # Margins and Size
+                margin=dict(l=50, r=20, t=80, b=50),
+                height=500,
+                
+                # Apply labels dynamically
+                **labels
+            )
+
+            # Force category order for bar charts specifically
+            if fig.data and fig.data[0].type == 'bar':
+                fig.update_layout(yaxis={'categoryorder': 'total ascending'})
+                
+            return fig
+        
+        
+     # 2. Create the horizontal bar chart
+        fig = px.bar(
+            df, 
+            x='total', 
+            y='detalle', 
+            orientation='h',
+            #title=f'Top {top_n} Productos por Venta',
+            #labels={target_column: 'Ventas Totales ($)', 'detalle': 'Producto'},
+            color_discrete_sequence=['#2ecc71'] # Your green color
+        )
+        fig = (plot_chart_theme(fig)) 
+        #plot_chart_theme(df)
+        # CRITICAL: Render the chart so AppTest can detect it
+        st.plotly_chart(fig, use_container_width=True)
+
+    
+    at = AppTest.from_function(app_script)
+    at.run()
+    
+    # 1. Check that the app executed without throwing any exceptions
+    assert not at.exception, f"App crashed with exceptions: {at.exception}"
+    # Verify that a plotly chart element was successfully rendered
+    # Use at.get() to check for the plotly chart element
+    charts = at.get("plotly_chart")
+    assert len(charts) == 1, "Expected exactly 1 plotly chart to be rendered"

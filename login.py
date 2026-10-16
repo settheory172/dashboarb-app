@@ -1,5 +1,5 @@
 import streamlit as st
-import pandas as pd
+#import pandas as pd
 import utils
 import hmac
 
@@ -65,9 +65,9 @@ else:
     role = next(iter(st.secrets['credentials'].keys()))#gets first item to apply logic as a main user
     
     if st.session_state['username'] == role:#shows information of main user once she is logged_in
-        st.title(f'Bienvenida, {st.secrets['main_user']['first_name']} {st.secrets['main_user']['last_name']}!!!')
-        st.sidebar.write(f'Correo: {st.secrets['main_user']['email']}')
-        st.sidebar.write(f'role: {st.secrets['main_user']['role']}')
+        st.title(f"Bienvenida, {st.secrets['main_user']['first_name']} {st.secrets['main_user']['last_name']}!!!")
+        st.sidebar.write(f"Correo: {st.secrets['main_user']['email']}")
+        st.sidebar.write(f"role: {st.secrets['main_user']['role']}")
         st.success('Tienes acceso completo a los datos')
                  
         st.subheader("Total de facturas ($)")
@@ -75,9 +75,9 @@ else:
         utils.show_data(role = role)
 
     else:#shows information of another type of user once logged_in
-        st.title(f'Hola, {st.secrets['user']['first_name']} {st.secrets['user']['last_name']}!!!')
-        st.sidebar.write(f'Correo: {st.secrets['user']['email']}')
-        st.sidebar.write(f'role: {st.secrets['user']['role']}')
+        st.title(f"Hola, {st.secrets['user']['first_name']} {st.secrets['user']['last_name']}!!!")
+        st.sidebar.write(f"Correo: {st.secrets['user']['email']}")
+        st.sidebar.write(f"role: {st.secrets['user']['role']}")
         st.info(f'tienes acceso limitado')
         
         st.subheader("Porcentaje de facturas(%)")
