@@ -23,12 +23,17 @@ def load_data():
     df = df.rename(columns={'company_name':'cliente','date':'fecha','descripcin':'detalle','vrtotal':'total'})
     fin = time.time()
     tiempo_carga = fin - inicio
-    st.write(f'Datos cargados correctamente en:{tiempo_carga}')
-    return df 
+    
+    return df,tiempo_carga 
 
 """depending on the role if role is user is shows raw data"""
 def prepare_data(role = 'user'):
-    df = load_data()
+    df,duracion = load_data()
+
+    if duracion < 10:
+        st.info(f"✅ datos se cargan en {duracion} segundos.")
+    else:
+        st.warning("⚠️ El tiempo de carga superó los 10 segundos.")
     
     if role == st.session_state['username']:
         # if it is not a gests then gets the raw 'total'
