@@ -23,23 +23,19 @@ def load_data():
     df = df.rename(columns={'company_name':'cliente','date':'fecha','descripcin':'detalle','vrtotal':'total'})
     fin = time.time()
     tiempo_carga = fin - inicio
-    
     return df,tiempo_carga 
 
 """depending on the role if role is user is shows raw data"""
 def prepare_data(role = 'user'):
     df,duracion = load_data()
-
-    if duracion < 10:
-        st.info(f"✅ datos se cargan en {duracion} segundos.")
-    else:
-        st.warning("⚠️ El tiempo de carga superó los 10 segundos.")
     
     if role == st.session_state['username']:
         # if it is not a gests then gets the raw 'total'
+        st.info(f"✅ datos se cargan en {duracion} segundos.")
         return df, 'total'
     else:
         # Calculate the percentage for guests
+        st.info(f"✅ datos se cargan en {duracion} segundos.")
         df['porcentaje'] = (df['total'] / df['total'].sum()) * 100
         #df['frecu_rel'] = df['total'].map(df['total'].value_counts(normalize=True))
         df_p = df.drop(columns=['total'])
