@@ -32,14 +32,14 @@ def prepare_data(role = 'user'):
     if role == st.session_state['username']:
         # if it is not a gests then gets the raw 'total'
         #st.info(f"✅ datos se cargan en {duracion} segundos.")
-        return df, 'total', duracion
+        return df, 'total'
     else:
         # Calculate the percentage for guests
         #st.info(f"✅ datos se cargan en {duracion} segundos.")
         df['porcentaje'] = (df['total'] / df['total'].sum()) * 100
         #df['frecu_rel'] = df['total'].map(df['total'].value_counts(normalize=True))
         df_p = df.drop(columns=['total'])
-        return df_p, 'porcentaje', duracion
+        return df_p, 'porcentaje'
 
 """
 to standardized some names of clients or costumers taking dataframe and column as 
