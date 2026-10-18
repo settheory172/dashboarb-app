@@ -28,7 +28,7 @@ def load_data():
 """depending on the role if role is user is shows raw data"""
 def prepare_data(role = 'user'):
     df,duracion = load_data()
-    st.info(f"✅ datos se cargan en {duracion} segundos.")
+    #st.info(f"✅ datos se cargan en {duracion} segundos.")
 
     if role == st.session_state['username']:
         # if it is not a gests then gets the raw 'total'
@@ -523,7 +523,7 @@ def show_data(role = 'user'):
     
     #gets a tuple of dataframe and column = total
     df_to_show, column = prepare_data(role)
-    
+
     st.write('Seleccionar para mostrar o esconder tabla:')
     #checkbox to hide or show data from drive
     if st.checkbox('Mostrar tabla:'):
