@@ -7,8 +7,6 @@ from streamlit_gsheets import GSheetsConnection
 import streamlit as st
 import plotly.express as px
 from thefuzz import process, fuzz
-#import numpy as np
-#import datetime
 import time
 
 """Sets a connections to google drive sheet and order and rename all columns""" 
@@ -16,18 +14,37 @@ import time
 def load_data():
     inicio = time.time()
     #conn.read() is effectively pd.read_csv() but for the cloud it returns a DataFrame you can chain Pandas methods directly 
+    
+    # 1. Connect to Google Sheets
     conn = st.connection('gsheets', type=GSheetsConnection)
     df = conn.read()
+
+    # 2. Native validation from para Google Sheets:
+    # If DataFrame is empty post DF is empty
+    if df is None or df.empty:
+        fin = time.time()
+        return pd.DataFrame(), fin - inicio
+    
+    # initial count of rows before depuration 
+    filas_iniciales = len(df)
+    # Mandatory columns that cannot be empty it prevent the webapp from collapsing
+    columnas_obligatorias = ['company_name','date','descripcin','vrtotal']
+    # Automated cleaning: delete rows with null values in critical columns
+    df = df.dropna(subset=columnas_obligatorias)
+    # counting columns after cleaning
+    filas_finales = len(df)
+    filas_ignoradas = filas_iniciales - filas_finales
     columns_ordered = ['company_name','date','descripcin','vrtotal']
     df = df[columns_ordered]
     df = df.rename(columns={'company_name':'cliente','date':'fecha','descripcin':'detalle','vrtotal':'total'})
     fin = time.time()
     tiempo_carga = fin - inicio
-    return df,tiempo_carga 
+
+    return df,tiempo_carga,filas_ignoradas 
 
 """depending on the role if role is user is shows raw data"""
 def prepare_data(role = 'user'):
-    df,_ = load_data()
+    df,_,_ = load_data()
     
     if role == st.session_state['username']:
         # if it is not a gests then gets the raw 'total'
@@ -520,30 +537,58 @@ def show_data(role = 'user'):
     #shows charts at the width of the site
     st.set_page_config(layout="wide")
 
-    #gets a tuple of dataframe and column = total
-    df_to_show, column = prepare_data(role)
+    #loading dataframe, duration and wrong rows
+    df, duracion,filas_malas = load_data()
 
-    st.write('Seleccionar para mostrar o esconder tabla:')
-    #checkbox to hide or show data from drive
-    if st.checkbox('Mostrar tabla:'):
-        st.dataframe(df_to_show)
-    
-    #functions that shows the most and least sold products 
-    ranking_product(df_to_show, column)
-    
-    #funtions about costumers or clients
-    ranking_clients(df_to_show,column)
-    customer_lifetime_value(df_to_show,column)
-    client_retention_abandonment(df_to_show,column)
-    
-    #functions related to behavior of purchases in months or years
-    monthly_growth_rate(df_to_show,column)
-    compund_annual_growth_rate(df_to_show,column)
-    years_revenue(df_to_show,column)
+    # Validate if DataFrame is empty
+    if df.empty:
+        st.warning(
+          "⚠️ **Aviso del Sistema:** La fuente de datos actual (Google Sheets / CSV)"
+          " se encuentra completamente vacía. No hay registros disponibles para"
+          " procesar en el dashboard."
+        )
+        st.info(
+          "💡 Por favor, verifique que la hoja de cálculo contenga información"
+          " válida."
+        )
+    else:
+        
+        #checks duration of loading data
+        st.info(f"✅ los datos cargaron en {duracion} segundos.")
 
-    #loading data time
-    _, duracion = load_data()
-    st.info(f"✅ los datos cargaron en {duracion} segundos.")
+        # Validate for empty rows
+        if filas_malas > 0:
+            st.warning(
+              f"⚠️ **Control de Integridad:** Se detectaron e ignoraron"
+              f" **{filas_malas} fila(s)** con datos corruptos o incompletos en el"
+              " archivo fuente. El dashboard se ha cargado con éxito omitiendo dichos"
+              " registros para garantizar la estabilidad del sistema."
+            )
+        else:
+            st.success("✅ Integridad de datos óptima: No se encontraron filas dañadas.")
+
+        #gets a tuple of dataframe and column = total
+        df_to_show, column = prepare_data(role)
+
+        st.write('Seleccionar para mostrar o esconder tabla:')
+        #checkbox to hide or show data from drive
+        if st.checkbox('Mostrar tabla:'):
+            st.dataframe(df_to_show)
+        
+        #functions that shows the most and least sold products 
+        ranking_product(df_to_show, column)
+        
+        #funtions about costumers or clients
+        ranking_clients(df_to_show,column)
+        customer_lifetime_value(df_to_show,column)
+        client_retention_abandonment(df_to_show,column)
+        
+        #functions related to behavior of purchases in months or years
+        monthly_growth_rate(df_to_show,column)
+        compund_annual_growth_rate(df_to_show,column)
+        years_revenue(df_to_show,column)
+
+   
 
 
 
