@@ -27,9 +27,8 @@ def load_data():
 
 """depending on the role if role is user is shows raw data"""
 def prepare_data(role = 'user'):
-    df,duracion = load_data()
-    #st.info(f"✅ datos se cargan en {duracion} segundos.")
-
+    df,_ = load_data()
+    
     if role == st.session_state['username']:
         # if it is not a gests then gets the raw 'total'
         return df, 'total'
@@ -520,7 +519,11 @@ def years_revenue (df, target_column):
 def show_data(role = 'user'):
     #shows charts at the width of the site
     st.set_page_config(layout="wide")
-    
+
+    #loading data time
+    _, duracion = load_data()
+    st.info(f"✅ los datos cargaron en {duracion} segundos.")
+
     #gets a tuple of dataframe and column = total
     df_to_show, column = prepare_data(role)
 
