@@ -12,8 +12,10 @@ import datetime
 import time
 
 """Sets a connections to google drive sheet and order and rename all columns""" 
-@st.cache_data(show_spinner = 'Recogiendo los datos desde la API...',ttl= 0)
+@st.cache_data(show_spinner = 'Recogiendo los datos desde la API...')
 def load_data():
+    # Este mensaje solo debe verse UNA VEZ en la terminal al iniciar la app
+    print("⚡ [LOG] Ejecutando consulta real a Google Sheets API...")
     inicio = time.time()
     #conn.read() is effectively pd.read_csv() but for the cloud it returns a DataFrame you can chain Pandas methods directly 
     conn = st.connection('gsheets', type=GSheetsConnection)
