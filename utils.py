@@ -7,8 +7,8 @@ from streamlit_gsheets import GSheetsConnection
 import streamlit as st
 import plotly.express as px
 from thefuzz import process, fuzz
-import numpy as np
-import datetime
+#import numpy as np
+#import datetime
 import time
 
 """Sets a connections to google drive sheet and order and rename all columns""" 
