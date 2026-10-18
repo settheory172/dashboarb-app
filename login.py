@@ -71,7 +71,6 @@ else:
         st.success('Tienes acceso completo a los datos')
 
         utils.prepare_data(role=role)
-        st.subheader("Total de facturas ($)")
         utils.show_data(role = role)
         
 
@@ -82,7 +81,6 @@ else:
         st.info(f'tienes acceso limitado')
         
         utils.prepare_data(role='')
-        st.subheader("Porcentaje de facturas(%)")
         utils.show_data(role = '')
         
         

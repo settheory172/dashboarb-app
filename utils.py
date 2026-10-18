@@ -552,7 +552,7 @@ def show_data(role = 'user'):
           " válida."
         )
     else:
-        
+
         #checks duration of loading data
         st.info(f"✅ los datos cargaron en {duracion} segundos.")
 
@@ -570,6 +570,7 @@ def show_data(role = 'user'):
         #gets a tuple of dataframe and column = total
         df_to_show, column = prepare_data(role)
 
+        st.subheader('Indicadores de desempeño de facturas')
         st.write('Seleccionar para mostrar o esconder tabla:')
         #checkbox to hide or show data from drive
         if st.checkbox('Mostrar tabla:'):
