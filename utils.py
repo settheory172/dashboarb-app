@@ -9,16 +9,21 @@ import plotly.express as px
 from thefuzz import process, fuzz
 import numpy as np
 import datetime
+import time
 
 """Sets a connections to google drive sheet and order and rename all columns""" 
-@st.cache_data(show_spinner = 'Recogiendo los datos desde la API...' )
+@st.cache_data(show_spinner = 'Recogiendo los datos desde la API...',ttl= 0)
 def load_data():
+    inicio = time.time()
     #conn.read() is effectively pd.read_csv() but for the cloud it returns a DataFrame you can chain Pandas methods directly 
     conn = st.connection('gsheets', type=GSheetsConnection)
     df = conn.read()
     columns_ordered = ['company_name','date','descripcin','vrtotal']
     df = df[columns_ordered]
     df = df.rename(columns={'company_name':'cliente','date':'fecha','descripcin':'detalle','vrtotal':'total'})
+    fin = time.time()
+    tiempo_carga = fin - inicio
+    st.write(f'Datos cargados correctamente en:{tiempo_carga}')
     return df 
 
 """depending on the role if role is user is shows raw data"""
