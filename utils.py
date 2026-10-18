@@ -520,10 +520,6 @@ def show_data(role = 'user'):
     #shows charts at the width of the site
     st.set_page_config(layout="wide")
 
-    #loading data time
-    _, duracion = load_data()
-    st.info(f"✅ los datos cargaron en {duracion} segundos.")
-
     #gets a tuple of dataframe and column = total
     df_to_show, column = prepare_data(role)
 
@@ -544,7 +540,10 @@ def show_data(role = 'user'):
     monthly_growth_rate(df_to_show,column)
     compund_annual_growth_rate(df_to_show,column)
     years_revenue(df_to_show,column)
-    
+
+    #loading data time
+    _, duracion = load_data()
+    st.info(f"✅ los datos cargaron en {duracion} segundos.")
 
 
 
