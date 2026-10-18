@@ -71,8 +71,9 @@ else:
         st.success('Tienes acceso completo a los datos')
 
         utils.prepare_data(role=role)
-        utils.show_data(role = role)
         st.subheader("Total de facturas ($)")
+        utils.show_data(role = role)
+        
 
     else:#shows information of another type of user once logged_in
         st.title(f"Hola, {st.secrets['user']['first_name']} {st.secrets['user']['last_name']}!!!")
@@ -81,7 +82,8 @@ else:
         st.info(f'tienes acceso limitado')
         
         utils.prepare_data(role='')
-        utils.show_data(role = '')
         st.subheader("Porcentaje de facturas(%)")
+        utils.show_data(role = '')
+        
         
     st.sidebar.button('Salir', on_click = logout)
